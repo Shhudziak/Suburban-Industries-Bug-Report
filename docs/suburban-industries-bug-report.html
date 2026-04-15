@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suburban Industries — Website Bug Report</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --slate-900: #0f172a;
+    --slate-700: #334155;
+    --slate-500: #64748b;
+    --slate-300: #cbd5e1;
+    --slate-100: #f1f5f9;
+    --slate-50: #f8fafc;
+    --amber-500: #f59e0b;
+    --amber-400: #fbbf24;
+    --amber-100: #fef3c7;
+    --red-500: #ef4444;
+    --red-50: #fef2f2;
+    --green-500: #22c55e;
+    --green-50: #f0fdf4;
+    --white: #ffffff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--slate-50);
+    color: var(--slate-900);
+    min-height: 100vh;
+    padding: 1rem;
+  }
+
+  .container {
+    max-width: 640px;
+    margin: 2rem auto;
+  }
+
+  .header {
+    background: var(--slate-900);
+    border-radius: 12px 12px 0 0;
+    padding: 2rem 2rem 1.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: repeating-linear-gradient(90deg, var(--amber-500) 0px, var(--amber-500) 24px, var(--slate-900) 24px, var(--slate-900) 28px);
+  }
+
+  .header h1 { color: var(--white); font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 0.25rem; }
+  .header .subtitle { color: var(--slate-300); font-size: 0.9rem; font-weight: 400; }
+  .badge { display: inline-block; background: var(--amber-500); color: var(--slate-900); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; padding: 0.2rem 0.6rem; border-radius: 4px; margin-bottom: 0.75rem; }
+
+  .form-body {
+    background: var(--white);
+    border: 1px solid var(--slate-300);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    padding: 2rem;
+  }
+
+  .field { margin-bottom: 1.75rem; }
+  .field:last-child { margin-bottom: 0; }
+  label { display: block; font-weight: 600; font-size: 0.88rem; color: var(--slate-900); margin-bottom: 0.4rem; }
+  .hint { display: block; font-size: 0.8rem; color: var(--slate-500); margin-bottom: 0.5rem; line-height: 1.4; }
+
+  input[type="text"], input[type="email"], input[type="url"], textarea, select {
+    width: 100%; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; color: var(--slate-900);
+    background: var(--slate-50); border: 1.5px solid var(--slate-300); border-radius: 8px;
+    padding: 0.7rem 0.85rem; transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--amber-500); box-shadow: 0 0 0 3px var(--amber-100); background: var(--white);
+  }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748b' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.85rem center; padding-right: 2.5rem; cursor: pointer;
+  }
+
+  .url-input-wrap {
+    display: flex; align-items: center; background: var(--slate-50);
+    border: 1.5px solid var(--slate-300); border-radius: 8px; overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .url-input-wrap:focus-within { border-color: var(--amber-500); box-shadow: 0 0 0 3px var(--amber-100); background: var(--white); }
+  .url-prefix { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--slate-500); padding: 0.7rem 0 0.7rem 0.85rem; user-select: none; flex-shrink: 0; }
+  .url-input-wrap input { border: none; background: transparent; padding-left: 0.25rem; box-shadow: none; }
+  .url-input-wrap input:focus { border: none; box-shadow: none; background: transparent; }
+
+  .severity-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.6rem; }
+  .severity-option { position: relative; }
+  .severity-option input { position: absolute; opacity: 0; pointer-events: none; }
+  .severity-card {
+    display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    padding: 0.85rem 0.5rem; border: 1.5px solid var(--slate-300); border-radius: 8px;
+    background: var(--slate-50); cursor: pointer; transition: all 0.2s; text-align: center;
+  }
+  .severity-card:hover { border-color: var(--slate-500); background: var(--white); }
+  .severity-option input:checked + .severity-card { border-color: var(--amber-500); background: var(--amber-100); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15); }
+  .severity-icon { font-size: 1.5rem; line-height: 1; }
+  .severity-label { font-size: 0.8rem; font-weight: 600; color: var(--slate-700); }
+  .severity-desc { font-size: 0.7rem; color: var(--slate-500); line-height: 1.3; }
+
+  .divider { border: none; border-top: 1px dashed var(--slate-300); margin: 0.5rem 0; }
+
+  .browser-options { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .browser-option { position: relative; }
+  .browser-option input { position: absolute; opacity: 0; pointer-events: none; }
+  .browser-chip {
+    display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.45rem 0.85rem;
+    border: 1.5px solid var(--slate-300); border-radius: 20px; background: var(--slate-50);
+    cursor: pointer; font-size: 0.82rem; font-weight: 500; color: var(--slate-700); transition: all 0.2s;
+  }
+  .browser-chip:hover { border-color: var(--slate-500); background: var(--white); }
+  .browser-option input:checked + .browser-chip { border-color: var(--amber-500); background: var(--amber-100); color: var(--slate-900); }
+
+  .submit-btn {
+    display: flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%;
+    padding: 0.85rem; background: var(--slate-900); color: var(--white); border: none; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer;
+    transition: all 0.2s; margin-top: 0.5rem;
+  }
+  .submit-btn:hover { background: var(--slate-700); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn svg { width: 18px; height: 18px; }
+  .submit-btn:disabled { background: var(--slate-500); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.6s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .success-message { display: none; text-align: center; padding: 3rem 2rem; }
+  .success-message.show { display: block; }
+  .success-icon { width: 56px; height: 56px; background: var(--green-50); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; font-size: 1.75rem; }
+  .success-message h2 { font-size: 1.2rem; margin-bottom: 0.4rem; }
+  .success-message p { color: var(--slate-500); font-size: 0.9rem; margin-bottom: 1.5rem; }
+
+  .another-btn {
+    display: inline-flex; padding: 0.6rem 1.5rem; background: var(--slate-50); color: var(--slate-700);
+    border: 1.5px solid var(--slate-300); border-radius: 8px; font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  }
+  .another-btn:hover { background: var(--white); border-color: var(--slate-500); }
+
+  .error-banner {
+    display: none; background: var(--red-50); border: 1.5px solid var(--red-500); border-radius: 8px;
+    padding: 0.75rem 1rem; margin-bottom: 1.5rem; font-size: 0.85rem; color: var(--red-500); line-height: 1.4;
+  }
+  .error-banner.show { display: block; }
+
+  .req { color: var(--red-500); margin-left: 2px; }
+  .footer { text-align: center; margin-top: 1.5rem; font-size: 0.78rem; color: var(--slate-500); }
+
+  @media (max-width: 480px) {
+    .container { margin: 1rem auto; }
+    .header { padding: 1.5rem; }
+    .form-body { padding: 1.5rem; }
+    .severity-options { grid-template-columns: 1fr; }
+    .severity-card { flex-direction: row; justify-content: flex-start; text-align: left; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <span class="badge">Internal Beta</span>
+    <h1>Website Bug Report</h1>
+    <p class="subtitle">Found something off on suburbanindustries.com? Let us know here.</p>
+  </div>
+
+  <div class="form-body" id="formBody">
+    <form id="bugForm" novalidate>
+
+      <div class="error-banner" id="errorBanner">
+        Something went wrong submitting your report. Please try again, or email the details to Steph directly.
+      </div>
+
+      <div class="field">
+        <label for="name">Your Name<span class="req">*</span></label>
+        <input type="text" id="name" placeholder="First and last name" required>
+      </div>
+
+      <div class="field">
+        <label for="email">Email<span class="req">*</span></label>
+        <input type="email" id="email" placeholder="you@durriesales.com" required>
+      </div>
+
+      <hr class="divider">
+
+      <div class="field">
+        <label for="pageUrl">What page were you on?<span class="req">*</span></label>
+        <span class="hint">Copy the web address from your browser, or just describe where you were.</span>
+        <div class="url-input-wrap">
+          <span class="url-prefix">suburbanindustries.com/</span>
+          <input type="text" id="pageUrl" placeholder="e.g. products, about-us, contact" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="issueType">What happened?<span class="req">*</span></label>
+        <select id="issueType" required>
+          <option value="" disabled selected>Choose the closest match…</option>
+          <option value="broken-link">A link didn't work or went to the wrong page</option>
+          <option value="page-error">A page wouldn't load or showed an error</option>
+          <option value="button-broken">A button or form didn't do anything</option>
+          <option value="looks-wrong">Something looked broken or out of place</option>
+          <option value="slow">Page was very slow to load</option>
+          <option value="mobile-issue">Didn't work right on my phone/tablet</option>
+          <option value="content-wrong">Info on the page is wrong or missing</option>
+          <option value="other">Something else</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="description">Tell us what happened<span class="req">*</span></label>
+        <span class="hint">Pretend you're telling a coworker. What did you click? What did you expect? What happened instead?</span>
+        <textarea id="description" placeholder="I clicked on the 'Request a Quote' button and nothing happened…" required></textarea>
+      </div>
+
+      <div class="field">
+        <label>How bad is it?<span class="req">*</span></label>
+        <div class="severity-options">
+          <label class="severity-option">
+            <input type="radio" name="severity" value="blocker" required>
+            <div class="severity-card">
+              <span class="severity-icon">🚫</span>
+              <span class="severity-label">Can't continue</span>
+              <span class="severity-desc">Completely blocked me</span>
+            </div>
+          </label>
+          <label class="severity-option">
+            <input type="radio" name="severity" value="annoying">
+            <div class="severity-card">
+              <span class="severity-icon">😤</span>
+              <span class="severity-label">Annoying</span>
+              <span class="severity-desc">Could work around it</span>
+            </div>
+          </label>
+          <label class="severity-option">
+            <input type="radio" name="severity" value="minor">
+            <div class="severity-card">
+              <span class="severity-icon">🤷</span>
+              <span class="severity-label">Minor</span>
+              <span class="severity-desc">Just looks off</span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label>What browser were you using?</label>
+        <span class="hint">Pick all that apply. Not sure? It's okay to skip this.</span>
+        <div class="browser-options">
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="chrome">
+            <span class="browser-chip">🌐 Chrome</span>
+          </label>
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="safari">
+            <span class="browser-chip">🧭 Safari</span>
+          </label>
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="edge">
+            <span class="browser-chip">📐 Edge</span>
+          </label>
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="firefox">
+            <span class="browser-chip">🦊 Firefox</span>
+          </label>
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="phone">
+            <span class="browser-chip">📱 Phone browser</span>
+          </label>
+          <label class="browser-option">
+            <input type="checkbox" name="browser" value="unsure">
+            <span class="browser-chip">🤷 Not sure</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="extra">Anything else?</label>
+        <textarea id="extra" rows="3" placeholder="Screenshots, other details, vibes… whatever you want to add."></textarea>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        <span id="btnText">Submit Bug Report</span>
+      </button>
+
+    </form>
+
+    <div class="success-message" id="successMsg">
+      <div class="success-icon">✓</div>
+      <h2>Report submitted!</h2>
+      <p>Thanks for helping make the site better. Steph will review it and send to the dev team.</p>
+      <button class="another-btn" onclick="resetForm()">Submit another report</button>
+    </div>
+  </div>
+
+  <p class="footer">Suburban Industries Beta Testing — Durrie Sales</p>
+</div>
+
+<script>
+  // =====================================================
+  // PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL BELOW
+  // =====================================================
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZ_F54rFKZUHnUSHEB2d-I3H9pK_NRTv-DDdG6S2F18vXCXBMk-PUQ5UvlRMNwiXY/exec";
+  // =====================================================
+
+  const form = document.getElementById('bugForm');
+  const successMsg = document.getElementById('successMsg');
+  const submitBtn = document.getElementById('submitBtn');
+  const btnText = document.getElementById('btnText');
+  const errorBanner = document.getElementById('errorBanner');
+
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    errorBanner.classList.remove('show');
+
+    const data = {
+      name: document.getElementById('name').value.trim(),
+      email: document.getElementById('email').value.trim(),
+      page: 'suburbanindustries.com/' + document.getElementById('pageUrl').value.trim(),
+      issueType: document.getElementById('issueType').value,
+      description: document.getElementById('description').value.trim(),
+      severity: document.querySelector('input[name="severity"]:checked')?.value || '',
+      browsers: Array.from(document.querySelectorAll('input[name="browser"]:checked')).map(cb => cb.value),
+      extra: document.getElementById('extra').value.trim(),
+      submittedAt: new Date().toISOString()
+    };
+
+    if (!data.name || !data.email || !data.issueType || !data.description || !data.severity) {
+      const fields = form.querySelectorAll('[required]');
+      for (const field of fields) {
+        if (!field.value && field.type !== 'radio') {
+          field.focus();
+          field.style.borderColor = 'var(--red-500)';
+          field.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.15)';
+          setTimeout(() => { field.style.borderColor = ''; field.style.boxShadow = ''; }, 2000);
+          return;
+        }
+      }
+      if (!data.severity) {
+        document.querySelector('.severity-options').scrollIntoView({ behavior: 'smooth' });
+        return;
+      }
+      return;
+    }
+
+    submitBtn.disabled = true;
+    btnText.innerHTML = '<span class="spinner"></span> Sending…';
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      form.style.display = 'none';
+      successMsg.classList.add('show');
+
+    } catch (error) {
+      console.error('Submission error:', error);
+      errorBanner.classList.add('show');
+      submitBtn.disabled = false;
+      btnText.innerHTML = 'Submit Bug Report';
+    }
+  });
+
+  function resetForm() {
+    form.reset();
+    form.style.display = 'block';
+    successMsg.classList.remove('show');
+    errorBanner.classList.remove('show');
+    submitBtn.disabled = false;
+    btnText.innerHTML = 'Submit Bug Report';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</body>
+</html>
